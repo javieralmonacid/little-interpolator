@@ -8,7 +8,6 @@ public:
   TabularFunction(const std::string filename)
   {
     initialize_map(filename);
-    std::cout << "*****" << table_values.rbegin()->second << std::endl;
   }
 
   void table_head(const unsigned int n_rows = 10);
