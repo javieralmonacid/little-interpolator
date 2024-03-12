@@ -12,6 +12,11 @@ public:
 
   void table_head(const unsigned int n_rows = 10);
   double operator()(const double t);
+  void output_interpolated_data(const std::string filename,
+                                const double time_start,
+                                const double time_end,
+                                const double delta_t,
+                                const std::string y_label = "");
 
 private:
   std::map<double,double> table_values;
@@ -68,6 +73,31 @@ double TabularData::operator()(const double t)
     return out;
   }
 
+// This is a function to test the output of the program.
+void TabularData::output_interpolated_data(const std::string filename,
+                                           const double time_start,
+                                           const double time_end,
+                                           const double delta_t,
+                                           const std::string y_label)
+{
+  std::ofstream output;
+  output.open(filename);
+  
+  double t = time_start;
+
+  if (y_label.length() > 0)
+    output << "time [s]" << "," << y_label << "\n"; 
+
+  while (t <= time_end)
+  {
+    output << t << "," << (*this)(t) << "\n";
+    t += delta_t;
+  }
+
+  if (t != time_end)
+    output << time_end << "," << (*this)(time_end) << "\n";
+}
+
 int main()
 {
   TabularData activation("linear_ramp.txt");
@@ -78,5 +108,9 @@ int main()
             << activation(0.25) << "\n"
             << activation(0.255) << "\n"
             << activation(0.26) << std::endl;
+  activation.output_interpolated_data("linear_ramp_output.csv",
+                                      0.0,
+                                      0.5,
+                                      0.001);
   return 0;
 }
