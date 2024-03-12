@@ -2,10 +2,10 @@
 #include <fstream>
 #include <map>
 
-class TabularData
+class TabularFunction
 {
 public:
-  TabularData(const std::string filename)
+  TabularFunction(const std::string filename)
   {
     initialize_map(filename);
   }
@@ -24,7 +24,7 @@ private:
 };
 
 // Read data and store it in map
-void TabularData::initialize_map(const std::string filename)
+void TabularFunction::initialize_map(const std::string filename)
 {
   std::ifstream infile(filename);
   double x, y;
@@ -33,7 +33,7 @@ void TabularData::initialize_map(const std::string filename)
 }
 
 // Display first 10 rows in table
-void TabularData::table_head(const unsigned int n_rows)
+void TabularFunction::table_head(const unsigned int n_rows)
 {
   unsigned int counter = 0;
   std::cout << "----------------\n"
@@ -54,7 +54,7 @@ void TabularData::table_head(const unsigned int n_rows)
   std::cout << "----------------" << std::endl;
 }
 
-double TabularData::operator()(const double t)
+double TabularFunction::operator()(const double t)
   {
     double out = 1000000; /*Bogus value*/
     auto iter_t = table_values.find(t);
@@ -74,7 +74,7 @@ double TabularData::operator()(const double t)
   }
 
 // This is a function to test the output of the program.
-void TabularData::output_interpolated_data(const std::string filename,
+void TabularFunction::output_interpolated_data(const std::string filename,
                                            const double time_start,
                                            const double time_end,
                                            const double delta_t,
@@ -100,7 +100,7 @@ void TabularData::output_interpolated_data(const std::string filename,
 
 int main()
 {
-  TabularData activation("linear_ramp.txt");
+  TabularFunction activation("linear_ramp.txt");
   activation.table_head(9);
   std::cout << activation(0.00) << "\n"
             << activation(0.005) << "\n"
