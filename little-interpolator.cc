@@ -8,6 +8,7 @@ public:
   TabularFunction(const std::string filename)
   {
     initialize_map(filename);
+    std::cout << "*****" << table_values.rbegin()->second << std::endl;
   }
 
   void table_head(const unsigned int n_rows = 10);
@@ -61,14 +62,18 @@ double TabularFunction::operator()(const double t)
     
     if (iter_t == table_values.end()) /* Value not found: interpolate! */
     {
-      auto t1 = table_values.upper_bound(t);
-      auto t0 = std::prev(t1);
-      out = ((t1->second - t0->second)/(t1->first - t0->first)) * (t - t0->first) + t0->second;
+      if (t <= table_values.rbegin()->first)
+      {
+        auto t1 = table_values.upper_bound(t);
+        auto t0 = std::prev(t1);
+        out = ((t1->second - t0->second)/(t1->first - t0->first)) * (t - t0->first) + t0->second;
+      }
+      else
+        out = table_values.rbegin()->second; /* Constant after last point */
+      
     }
     else /* Value found! Return this value */
       out = iter_t->second;
-
-    // To do: raise an exception if t is out of data range.
 
     return out;
   }
@@ -100,17 +105,29 @@ void TabularFunction::output_interpolated_data(const std::string filename,
 
 int main()
 {
-  TabularFunction activation("linear_ramp.txt");
-  activation.table_head(9);
-  std::cout << activation(0.00) << "\n"
-            << activation(0.005) << "\n"
-            << activation(0.01) << "\n"
-            << activation(0.25) << "\n"
-            << activation(0.255) << "\n"
-            << activation(0.26) << std::endl;
-  activation.output_interpolated_data("linear_ramp_output.csv",
-                                      0.0,
-                                      0.5,
-                                      0.001);
+  {
+    TabularFunction activation("linear_ramp.txt");
+    activation.table_head(9);
+    std::cout << activation(0.00) << "\n"
+              << activation(0.005) << "\n"
+              << activation(0.01) << "\n"
+              << activation(0.25) << "\n"
+              << activation(0.255) << "\n"
+              << activation(0.26) << std::endl;
+    activation.output_interpolated_data("linear_ramp_output.csv",
+                                        0.0,
+                                        0.5,
+                                        0.001);
+  }
+  {
+    TabularFunction length("few_points.txt");
+    length.table_head();
+    length.output_interpolated_data("few_points_interpolated.csv",
+                                    0.0,
+                                    1.5,
+                                    0.01,
+                                    "length [m]");
+
+  }
   return 0;
 }
